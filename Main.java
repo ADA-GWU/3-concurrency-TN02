@@ -6,13 +6,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Main {
+public class MainT {
     //declaration
     static BufferedImage image;
     static ImageIcon icon;
     static JFrame frame;
-    //  static final int startX = 0;
-    //  static final int startY = 0;
 
     public static void main(String[] args) {
         // Collecting input from user
@@ -22,7 +20,8 @@ public class Main {
 
         try {
             image = ImageIO.read(new File(fileName));
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
@@ -32,7 +31,7 @@ public class Main {
     }
 
     private static void initialization() {
-      /*  // screen size
+        // screen size
         DisplayMode mode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
         // width and height
         int maxWidth = mode.getWidth();
@@ -46,16 +45,15 @@ public class Main {
 
         double scale = Math.min(widthScale, heightScale);
 
-        int scaledWidth = 1920;//(int) (imageWidth * scale);
-        int scaledHeight = 1080;//(int) (imageHeight * scale);
+        int scaledWidth = (int) (imageWidth * scale);
+        int scaledHeight = (int) (imageHeight * scale);
+        Image scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 
-        BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = scaledImage.createGraphics();
-        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();*/
-
-        //  Image resizedImage = image.getScaledInstance(800, 600, Image.SCALE_SMOOTH);
-
+        // Create a new BufferedImage from the scaled image
+        image = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.drawImage(scaledImage, 0, 0, null);
+        g.dispose();
 
         // Create an ImageIcon from the scaled image
         icon = new ImageIcon(image);
@@ -64,12 +62,10 @@ public class Main {
         JLabel label = new JLabel(icon);
 
         frame = new JFrame();
-        // Add the JLabel to the JFrame
         frame.getContentPane().add(label);
         frame.pack();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Image Display");
-        //   frame.setSize(scaledWidth, scaledHeight);
         frame.setLocationRelativeTo(null); // Center the JFrame on the screen
         frame.setVisible(true);
     }
@@ -81,18 +77,21 @@ public class Main {
             blurring(0, 0, image.getWidth(), image.getHeight(),squareSize);
         }
         else if (processingMode.equals("M")) {
+            
             int cores = Runtime.getRuntime().availableProcessors();
+            
             for (int i = 0; i < cores; i++) {
-                int startThreadY = image.getHeight() * i / cores;
-                int endThreadY;
+                int startY = image.getHeight() * i / cores;
+                int endY;
 
                 if (i != cores - 1) {
-                    endThreadY = image.getHeight() * (i + 1) / cores;
+                    endY = image.getHeight() * (i + 1) / cores;
                 }
                 else {
-                    endThreadY = image.getHeight();
+                    endY = image.getHeight();
                 }
-                threads.add(new Thread(() -> blurring(0, startThreadY, image.getWidth(), endThreadY,squareSize)));
+                
+                threads.add(new Thread(() -> blurring(0, startY, image.getWidth(), endY, squareSize)));
                 threads.get(i).start();
             }
         }
@@ -104,15 +103,16 @@ public class Main {
             for (Thread th : threads)
                 th.join();
 
-            File resultImage = new File("result.jpg");
-            ImageIO.write(image, "jpg", resultImage);
+            File resultFile = new File("result.jpg");
+            ImageIO.write(image, "jpg", resultFile);
             frame.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } 
+        catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private static void blurring(int x, int y,int lastX, int lastY,int n) {
+    private static void blurring(int x, int y,int lastX, int lastY, int n) {
         for (int j = y; j < lastY; j = j + n) {
             for (int i = x; i < lastX; i = i + n) {
                 findColorAvg(i, j, lastX, lastY, n);
