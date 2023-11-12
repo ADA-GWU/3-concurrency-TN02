@@ -27,9 +27,9 @@ To find the average color for the (square size) x (square size) boxes in the giv
 
 Program accepts three values from the command line as input: file name, square size and the processing mode (S or M):
 
-file name: the name of the graphic file of jpg format (no size constraints)
-square size: the side of the square for the averaging
-processing mode: 'S' - single threaded and 'M' - multi threaded
+       file name: the name of the graphic file of jpg format (no size constraints)
+       square size: the side of the square for the averaging
+       processing mode: 'S' - single threaded and 'M' - multi threaded
 
 In single-threaded mode, the programme begins at the top left (0,0 coordinates) and changes the pixels in the given box size to the average colour. The "blurring" process works from left to right; when one row is finished, the boxes on the next row begin "blurring."
 
@@ -39,9 +39,20 @@ Finally, after the colours have been changed, the image is saved in the "result.
 
 ### Usage:
 
-1. Run the Java file. Ex: Main.java somefile.jpg 5 S
-2. You will see the process in real-time
-3. The resulting file will be saved with the name: result.jpg
+1. Clone the repo
+
+```sh
+git clone https://github.com/ADA-GWU/3-concurrency-TN02
+```
+
+2. Run the Java file. (Ex: imagename is the name of image, 5 is a square size, and S is single-thread)
+ 
+```sh
+java Main.java imagename.jpg 5 S
+```
+
+3. You will see the process in real-time in the new window
+4. After finishing the task, the resulting file will be saved with the name: result.jpg
 
 ## Built With
 
