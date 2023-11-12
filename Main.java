@@ -9,9 +9,10 @@ import java.util.ArrayList;
 public class Main {
     //declaration
     static BufferedImage image;
-    static Image scaledImage;
     static ImageIcon icon;
     static JFrame frame;
+    //  static final int startX = 0;
+    //  static final int startY = 0;
 
     public static void main(String[] args) {
         // Collecting input from user
@@ -21,70 +22,77 @@ public class Main {
 
         try {
             image = ImageIO.read(new File(fileName));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+
         initialization();
         processImage(squareSize, processingMode);
+
     }
 
     private static void initialization() {
+      /*  // screen size
         DisplayMode mode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
         // width and height
-        int screenWidth = mode.getWidth();
-        int screenHeight = mode.getHeight();
+        int maxWidth = mode.getWidth();
+        int maxHeight = mode.getHeight();
 
-        if (image.getWidth() > screenWidth || image.getHeight() > screenHeight) {
-            // Calculate the scaling factors
-            double widthScale = (double) screenWidth / image.getWidth();
-            double heightScale = (double) screenHeight / image.getHeight();
-            double scale = Math.min(widthScale, heightScale);
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
 
-            // Resize the image
-            int newWidth = (int) (image.getWidth() * scale);
-            int newHeight = (int) (image.getHeight() * scale);
+        double widthScale = (double) maxWidth / imageWidth;
+        double heightScale = (double) maxHeight / imageHeight;
 
-            scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        } else {
-            scaledImage = image;
-        }
+        double scale = Math.min(widthScale, heightScale);
+
+        int scaledWidth = 1920;//(int) (imageWidth * scale);
+        int scaledHeight = 1080;//(int) (imageHeight * scale);
+
+        BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = scaledImage.createGraphics();
+        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();*/
+
+        //  Image resizedImage = image.getScaledInstance(800, 600, Image.SCALE_SMOOTH);
+
+
         // Create an ImageIcon from the scaled image
-        icon = new ImageIcon(scaledImage);
+        icon = new ImageIcon(image);
 
         // Create a JLabel to display the scaled image
         JLabel label = new JLabel(icon);
 
         frame = new JFrame();
-        frame.add(label);
+        // Add the JLabel to the JFrame
+        frame.getContentPane().add(label);
         frame.pack();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setTitle("Processing Image...");
+        frame.setTitle("Image Display");
+        //   frame.setSize(scaledWidth, scaledHeight);
         frame.setLocationRelativeTo(null); // Center the JFrame on the screen
         frame.setVisible(true);
     }
     private static void processImage(int squareSize, String processingMode) {
+
         ArrayList<Thread> threads = new ArrayList<>();
 
         if (processingMode.equals("S")) {
             blurring(0, 0, image.getWidth(), image.getHeight(),squareSize);
         }
         else if (processingMode.equals("M")) {
-
             int cores = Runtime.getRuntime().availableProcessors();
-
             for (int i = 0; i < cores; i++) {
-                int startY = image.getHeight() * i / cores;
-                int endY;
+                int startThreadY = image.getHeight() * i / cores;
+                int endThreadY;
 
                 if (i != cores - 1) {
-                    endY = image.getHeight() * (i + 1) / cores;
+                    endThreadY = image.getHeight() * (i + 1) / cores;
                 }
                 else {
-                    endY = image.getHeight();
+                    endThreadY = image.getHeight();
                 }
-
-                threads.add(new Thread(() -> blurring(0, startY, image.getWidth(), endY, squareSize)));
+                threads.add(new Thread(() -> blurring(0, startThreadY, image.getWidth(), endThreadY,squareSize)));
                 threads.get(i).start();
             }
         }
@@ -96,16 +104,15 @@ public class Main {
             for (Thread th : threads)
                 th.join();
 
-            File resultFile = new File("result.jpg");
-            ImageIO.write(image, "jpg", resultFile);
+            File resultImage = new File("result.jpg");
+            ImageIO.write(image, "jpg", resultImage);
             frame.dispose();
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private static void blurring(int x, int y,int lastX, int lastY, int n) {
+    private static void blurring(int x, int y,int lastX, int lastY,int n) {
         for (int j = y; j < lastY; j = j + n) {
             for (int i = x; i < lastX; i = i + n) {
                 findColorAvg(i, j, lastX, lastY, n);
