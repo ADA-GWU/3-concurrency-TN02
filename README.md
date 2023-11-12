@@ -17,18 +17,9 @@
 
 ## Table Of Contents
 
-* [About the Assignment](#about-the-assignment)
+* [About the Task](#task)
 * [Built With](#built-with)
-* [Task](#task)
 * [Author](#author)
-
-## About The Assignment
-
-Concurrency
-
-## Built With
-
-Java
 
 ## Task
 
@@ -51,6 +42,10 @@ Finally, after the colours have been changed, the image is saved in the "result.
 1. Run the Java file. Ex: Main.java somefile.jpg 5 S
 2. You will see the process in real-time
 3. The resulting file will be saved with the name: result.jpg
+
+## Built With
+
+Java
 
 ## Author
 
