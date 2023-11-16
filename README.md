@@ -45,7 +45,13 @@ Finally, after the colours have been changed, the image is saved in the "result.
 git clone https://github.com/ADA-GWU/3-concurrency-TN02
 ```
 
-2. Run the Java file. (Ex: imagename is the name of image, 5 is a square size, and S is single-thread)
+2. Compile the Java files (Make sure, you are in the same directory)
+
+```sh
+javac Main.java ImageProcessor.java
+```
+
+3. Run the Java file. (Ex: imagename is the name of image, 5 is a square size, and S is single-thread)
  
 ```sh
 java Main.java imagename.jpg 5 S
